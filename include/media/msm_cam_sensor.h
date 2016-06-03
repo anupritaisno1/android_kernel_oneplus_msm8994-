@@ -230,6 +230,7 @@ struct sensorb_cfg_data {
 		struct msm_sensor_info_t      sensor_info;
 		struct msm_sensor_init_params sensor_init_params;
 		void                         *setting;
+		struct msm_sensor_i2c_sync_params sensor_i2c_sync_params;
 	} cfg;
 };
 
@@ -409,6 +410,10 @@ enum msm_sensor_cfg_type_t {
 	CFG_SET_AUTOFOCUS,
 	CFG_CANCEL_AUTOFOCUS,
 	CFG_SET_STREAM_TYPE,
+	CFG_SET_I2C_SYNC_PARAM,
+	CFG_WRITE_I2C_ARRAY_ASYNC,
+	CFG_WRITE_I2C_ARRAY_SYNC,
+	CFG_WRITE_I2C_ARRAY_SYNC_BLOCK,
 };
 
 enum msm_actuator_cfg_type_t {
@@ -442,12 +447,18 @@ struct reg_settings_ois_t {
 	enum msm_camera_i2c_data_type data_type;
 	enum msm_ois_i2c_operation i2c_operation;
 	uint32_t delay;
+#ifdef VENDOR_EDIT // ois burst write
+	#define OIS_REG_DATA_SEQ_MAX 128
+	unsigned char reg_data_seq[OIS_REG_DATA_SEQ_MAX];
+	uint32_t reg_data_seq_size;
+#endif
 };
 
 struct msm_ois_params_t {
 	uint16_t data_size;
 	uint16_t setting_size;
 	uint32_t i2c_addr;
+	enum i2c_freq_mode_t i2c_freq_mode;
 	enum msm_camera_i2c_reg_addr_type i2c_addr_type;
 	enum msm_camera_i2c_data_type i2c_data_type;
 	struct reg_settings_ois_t *settings;
@@ -715,6 +726,7 @@ struct sensorb_cfg_data32 {
 		struct msm_sensor_info_t      sensor_info;
 		struct msm_sensor_init_params sensor_init_params;
 		compat_uptr_t                 setting;
+		struct msm_sensor_i2c_sync_params sensor_i2c_sync_params;
 	} cfg;
 };
 
@@ -722,6 +734,7 @@ struct msm_ois_params_t32 {
 	uint16_t data_size;
 	uint16_t setting_size;
 	uint32_t i2c_addr;
+	enum i2c_freq_mode_t i2c_freq_mode;
 	enum msm_camera_i2c_reg_addr_type i2c_addr_type;
 	enum msm_camera_i2c_data_type i2c_data_type;
 	compat_uptr_t settings;
